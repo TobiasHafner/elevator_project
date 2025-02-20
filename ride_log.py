@@ -12,7 +12,7 @@ class RideLog:
         self.clock = clock
         self.rides = deque(maxlen=size)
 
-    def log_ride(self, start, end, id=None):
+    def log_ride(self, start, end, person_id=None):
         """
         Logs a ride with timestamps and API request data if available.
         :param start: The departure floor
@@ -24,7 +24,7 @@ class RideLog:
             "real_time": int(datetime.now().timestamp()),
             "start": start,
             "end": end,
-            "id": id
+            "person_id": id
         }
         self.rides.append(ride_entry)
 

@@ -1,11 +1,12 @@
 # This class can take travel requests from std to control an elevator
 
-import time
 import os
+import time
+
 from elevator import Elevator
 from elevator_scheduler import Scheduler
-from scheduler_moves import Moves
 from request_generator import RequestGenerator
+from scheduler_moves import Moves
 
 # amonut of floors
 FLOOR_COUNT = 16
@@ -18,18 +19,19 @@ ITER_TIME = 0.5
 # tiem waiting on floor
 STOP_TIME = 0.75
 
+
 def run_controller():
     elevator = Elevator(FLOOR_COUNT, MAX_LOAD)
     scheduler = Scheduler(elevator)
     generator = RequestGenerator(FLOOR_COUNT, REQUEST_PROBABILITY)
 
-    while(True):
+    while (True):
         # read
         request = generator.generate_request()
         split = request.split()
         if (len(split) != 0):
-            start = int(split[0])
-            end = int(split[1])
+            start = int(split[1])
+            end = int(split[2])
 
             scheduler.handle_request(start, end)
 
@@ -40,7 +42,7 @@ def run_controller():
                 elevator.close_doors()
                 elevator.move_up()
             case Moves.STOP:
-                    elevator.open_doors()
+                elevator.open_doors()
             case Moves.DOWN:
                 elevator.close_doors()
                 elevator.move_down()

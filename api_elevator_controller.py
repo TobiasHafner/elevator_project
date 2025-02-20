@@ -3,7 +3,7 @@ import time
 import uuid
 from hashlib import sha256
 
-from flask import Flask, jsonify, request, Response, render_template_string, make_response
+from flask import Flask, jsonify, request, Response, render_template_string
 
 from elevator import Elevator
 from elevator_scheduler import Scheduler
@@ -40,11 +40,12 @@ def run_elevator():
         request = request_generator.generate_request()
         split = request.split()
         if len(split) != 0:
-            start = int(split[0])
-            end = int(split[1])
+            person_id = split[0]
+            start = int(split[1])
+            end = int(split[2])
             scheduler.handle_request(start, end)
             statistics.track_ride(start, end)
-            ride_log.log_ride(start, end)
+            ride_log.log_ride(start, end, person_id)
 
         # Process elevator moves
         move = scheduler.get_next_move()
@@ -144,6 +145,7 @@ def get_stats():
     """ Returns the current statistics of the elevator."""
     return jsonify(statistics.get())
 
+
 @app.route('/elevator/log', methods=['GET'])
 def get_log():
     """ Returns the current statistics of the elevator."""
@@ -172,8 +174,8 @@ def request_ride():
         user_id = str(uuid.uuid4())
         response.set_cookie("user_id", user_id, max_age=60 * 60 * 24 * 365)
 
-    id = sha256(user_id.encode("utf-8")).hexdigest()
-    ride_log.log_ride(start, end, id)
+    person_id = sha256(user_id.encode("utf-8")).hexdigest()
+    ride_log.log_ride(start, end, person_id)
     return response
 
 
