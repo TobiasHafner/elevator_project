@@ -1,5 +1,5 @@
 # This class represents an elevator that can move, open dors and tell it's current load
-
+import json
 from safety_error import SafetyError
 
 class Elevator:
@@ -76,3 +76,14 @@ class Elevator:
             # no elevator at that floor
             string += format_string.format(floor, ' | ')
         return string
+
+    def get_state(self):
+        state = {
+            "load": self.load,
+            "max_load": self.MAX_LOAD,
+            "position": self.position,
+            "doors_open": self.doors_open,
+            "floor_count": self.FLOOR_COUNT,
+        }
+        return state
+

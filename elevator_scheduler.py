@@ -1,12 +1,14 @@
 # This class schedules an elevator based on user input
 
-from elevator import Elevator
 from collections import deque
-from scheduler_moves import Moves
+
+from elevator import Elevator
 from scheduler_directions import Directions
+from scheduler_moves import Moves
 
 # Weight of an average person
 PERSON_WEIGHT = 80
+
 
 class Scheduler:
     def __init__(self, elevator: Elevator):
@@ -16,13 +18,13 @@ class Scheduler:
         self.elevator = elevator
 
         # scheduling data
-        self.direction = True
+        self.is_moving_upwards = True
         self.up_requests = [deque([]) for _ in range(self.FLOOR_COUNT + 1)]
         self.down_requests = [deque([]) for _ in range(self.FLOOR_COUNT + 1)]
         self.stop_requests = [0] * (self.FLOOR_COUNT + 1)
         # chase mode for scan
         self.is_chasing = False
-    
+
     def get_next_move(self):
         # rest if no requests
         if (not self.has_pending_requests()):
@@ -31,21 +33,21 @@ class Scheduler:
         if (self.is_chasing):
             return self.run_chase_mode()
         # normal operation
-        return self.run_normal_operation()        
+        return self.run_normal_operation()
 
     def run_chase_mode(self):
         # chasing up
-        if (self.direction and self.get_outmost_request(Directions.UP) > self.elevator.get_position()):
+        if (self.is_moving_upwards and self.get_outmost_request(Directions.UP) > self.elevator.get_position()):
             return Moves.UP
         # chasing down
-        if ((not self.direction) and self.get_outmost_request(Directions.DOWN) < self.elevator.get_position()):
+        if ((not self.is_moving_upwards) and self.get_outmost_request(Directions.DOWN) < self.elevator.get_position()):
             return Moves.DOWN
         # leave chase mode
         self.is_chasing = False
         # continue in other direction
-        self.direction = not self.direction
+        self.is_moving_upwards = not self.is_moving_upwards
         # handle request
-        if (self.direction):
+        if (self.is_moving_upwards):
             self.handle_down_destinations()
         else:
             self.handle_up_destinations()
@@ -53,12 +55,11 @@ class Scheduler:
 
     def run_normal_operation(self):
         # moving up
-        if (self.direction):
+        if (self.is_moving_upwards):
             # upwards entry or stop request at current floor
             if ((self.up_requests[self.elevator.get_position()]
-                and self.not_full())
-                or self.stop_requests[self.elevator.get_position()]):
-
+                 and self.not_full())
+                    or self.stop_requests[self.elevator.get_position()]):
                 self.handle_up_destinations()
                 return Moves.STOP
             # check for requests further up
@@ -72,9 +73,8 @@ class Scheduler:
         else:
             # downwards entry request at current floor
             if ((self.down_requests[self.elevator.get_position()]
-                and self.not_full())
-                or self.stop_requests[self.elevator.get_position()]):
-
+                 and self.not_full())
+                    or self.stop_requests[self.elevator.get_position()]):
                 self.handle_down_destinations()
                 return Moves.STOP
             # check for requests further down
@@ -89,36 +89,36 @@ class Scheduler:
             destination = self.up_requests[self.elevator.get_position()].popleft()
             self.stop_requests[destination] += 1
 
-        # ----------------------------------------------------------------------
-        #   Update elevator weight model:
+            # ----------------------------------------------------------------------
+            #   Update elevator weight model:
             self.elevator.inc_load(PERSON_WEIGHT)
-        #-----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
 
     def add_down_destinations(self):
         while self.down_requests[self.elevator.get_position()] and self.not_full():
             destination = self.down_requests[self.elevator.get_position()].popleft()
             self.stop_requests[destination] += 1
 
-        # ----------------------------------------------------------------------
-        #   Update elevator weight model:
+            # ----------------------------------------------------------------------
+            #   Update elevator weight model:
             self.elevator.inc_load(PERSON_WEIGHT)
-        #-----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
 
     def handle_down_destinations(self):
-    # --------------------------------------------------------------------------
-    #   Update elevator weight model:
+        # --------------------------------------------------------------------------
+        #   Update elevator weight model:
         self.elevator.dec_load(
             self.stop_requests[self.elevator.get_position()] * PERSON_WEIGHT)
-    #---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         self.stop_requests[self.elevator.get_position()] = 0
         self.add_down_destinations()
 
     def handle_up_destinations(self):
-    # --------------------------------------------------------------------------
-    #   Update elevator weight model:
+        # --------------------------------------------------------------------------
+        #   Update elevator weight model:
         self.elevator.dec_load(
             self.stop_requests[self.elevator.get_position()] * PERSON_WEIGHT)
-    #---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         self.stop_requests[self.elevator.get_position()] = 0
         self.add_up_destinations()
 
@@ -141,13 +141,13 @@ class Scheduler:
         if (move_up):
             outmost = self.elevator.get_position()
             for floor in range(self.elevator.get_position(), self.FLOOR_COUNT + 1):
-                if(self.down_requests[floor] and floor > outmost):
+                if (self.down_requests[floor] and floor > outmost):
                     outmost = floor
             return outmost
         else:
             outmost = self.elevator.get_position()
             for floor in range(0, self.elevator.get_position()):
-                if(self.up_requests[floor] and floor < outmost):
+                if (self.up_requests[floor] and floor < outmost):
                     outmost = floor
             return outmost
 
@@ -174,10 +174,9 @@ class Scheduler:
 
     # string representation of the elevator
     def __str__(self):
-        
         format_string = "{:<6} {:<24} {:<24} {:<24}\n"
         string = 'SCHEDULER:\n'
-        string += format_string.format('FLOOR','UP_REQUESTS','DOWN_REQUESTS','STOP_REQUESTS')
+        string += format_string.format('FLOOR', 'UP_REQUESTS', 'DOWN_REQUESTS', 'STOP_REQUESTS')
         for floor in range(self.FLOOR_COUNT, -1, -1):
             up = ', '.join(map(str, self.up_requests[floor]))
             down = ', '.join(map(str, self.down_requests[floor]))
@@ -185,3 +184,20 @@ class Scheduler:
             stop = req_count if req_count > 0 else ''
             string += format_string.format(floor, up, down, stop)
         return string
+
+    def get_state(self):
+        scheduler_state = {
+            "floor_count": self.FLOOR_COUNT,
+            "floors": []
+        }
+
+        for floor in range(self.FLOOR_COUNT, -1, -1):
+            floor_state = {
+                "floor": floor,
+                "up_requests": list(self.up_requests[floor]),
+                "down_requests": list(self.down_requests[floor]),
+                "stop_requests": self.stop_requests[floor]
+            }
+            scheduler_state["floors"].append(floor_state)
+
+        return scheduler_state
