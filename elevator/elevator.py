@@ -1,6 +1,6 @@
 # This class represents an elevator that can move, open dors and tell it's current load
-import json
-from safety_error import SafetyError
+from elevator.safety_error import SafetyError
+
 
 class Elevator:
     def __init__(self, floor_count, max_load):
@@ -14,7 +14,7 @@ class Elevator:
         self.load = 0
         # state of the elevator doors
         self.doors_open = False
-    
+
     def move_up(self):
         if (self.position == self.FLOOR_COUNT):
             raise SafetyError("Elevator is at topmost floor! Moving up is not permitted!")
@@ -57,7 +57,7 @@ class Elevator:
 
     def get_position(self):
         return self.position
-    
+
     def __repr__(self):
         return f"Elevator({self.FLOOR_COUNT}, {self.MAX_LOAD})"
 
@@ -86,4 +86,3 @@ class Elevator:
             "floor_count": self.FLOOR_COUNT,
         }
         return state
-

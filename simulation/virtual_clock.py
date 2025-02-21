@@ -29,7 +29,7 @@ class VirtualClock:
         return self.get_virtual_minutes() // 60
 
     def get_virtual_seconds_since_epoch(self):
-        return int((datetime.now() - self.start_time).total_seconds())
+        return int((datetime.now() - self.start_time).total_seconds()) * self.scale
 
     def __str__(self):
         """Returns the current virtual time in HH:MM:SS format."""

@@ -1,92 +1,39 @@
 import threading
-import time
 import uuid
 from hashlib import sha256
-
 from flask import Flask, jsonify, request, Response, render_template_string
-
-from elevator import Elevator
-from elevator_scheduler import Scheduler
-from fluctuating_request_controller import FluctuatingRequestController
-from request_generator import RequestGenerator
-from ride_log import RideLog
-from scheduler_moves import Moves
-from statistics import Statistics
+from building.building import Building
+from building.floordefinition import FLOOR_DEFINITION
+from elevator.elevator import Elevator
+from elevator.scheduling.elevator_scheduler import Scheduler
+from statistics.ride_log import RideLog
+from statistics.statistics import Statistics
+from people.population import Population
+from people.roledistribution import ROLE_DISTRIBUTION
+from loop import Loop
 from virtual_clock import VirtualClock
 
 # Constants
-FLOOR_COUNT = 16
+POPULATION_SIZE = 100
 MAX_LOAD = 1200
-ITERATION_INTERVAL = 0.5
-STOP_TIME = 1
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Initialize Elevator and Scheduler
-elevator = Elevator(FLOOR_COUNT, MAX_LOAD)
+building = Building(FLOOR_DEFINITION)
+population = Population(POPULATION_SIZE, building, ROLE_DISTRIBUTION)
+elevator = Elevator(building.number_of_floors, MAX_LOAD)
 scheduler = Scheduler(elevator)
-clock = VirtualClock(scale=30)
-request_controller = FluctuatingRequestController(clock)
-request_generator = RequestGenerator(FLOOR_COUNT, request_controller, clock)
+clock = VirtualClock(scale=120)
 statistics = Statistics(clock)
 ride_log = RideLog(clock)
-
-
-def run_elevator():
-    """ Runs the elevator continuously in a separate thread."""
-    while True:
-        # Generate random requests
-        request = request_generator.generate_request()
-        split = request.split()
-        if len(split) != 0:
-            person_id = split[0]
-            start = int(split[1])
-            end = int(split[2])
-            scheduler.handle_request(start, end)
-            statistics.track_ride(start, end)
-            ride_log.log_ride(start, end, person_id)
-
-        # Process elevator moves
-        move = scheduler.get_next_move()
-        match move:
-            case Moves.UP:
-                elevator.close_doors()
-                elevator.move_up()
-            case Moves.STOP:
-                elevator.open_doors()
-            case Moves.DOWN:
-                elevator.close_doors()
-                elevator.move_down()
-            case Moves.STAY:
-                elevator.close_doors()
-
-        if (elevator.get_door_state()):
-            time.sleep(STOP_TIME)
-        time.sleep(ITERATION_INTERVAL)
+loop = Loop(scheduler, elevator, population, clock, statistics, ride_log, iteration_interval=0.125, stop_time=0.25)
 
 
 @app.route('/elevator/stream', methods=['GET'])
 def stream_elevator():
     """ Streams the elevator state in real-time. """
-
-    def generate():
-        while True:
-            # Generate the full elevator status
-            elevator_status = str(elevator)  # Assuming 'elevator' is a valid object
-            scheduler_status = str(scheduler)  # Assuming 'scheduler' is a valid object
-            current_time = f"Current Time: {str(clock)}"
-
-            # Format the ASCII output correctly
-            ascii_output = f"{current_time}\n\n{elevator_status}\n{scheduler_status}"
-
-            # Properly format as SSE
-            formatted_data = "\n".join([f"data: {line}" for line in ascii_output.split("\n")])
-            yield f"{formatted_data}\n\n"
-
-            time.sleep(ITERATION_INTERVAL)  # Assuming ITERATION_INTERVAL is defined
-
-    return Response(generate(), mimetype='text/event-stream')
+    return Response(loop.generate_ascii_art(), mimetype='text/event-stream')
 
 
 @app.route('/elevator')
@@ -152,6 +99,12 @@ def get_log():
     return jsonify(ride_log.get())
 
 
+@app.route('/elevator/population', methods=['GET'])
+def get_population():
+    """ Returns the current statistics of the elevator."""
+    return jsonify(population.get_population())
+
+
 @app.route('/elevator/request_ride', methods=['GET'])
 def request_ride():
     """ Handles ride requests with start and end floors."""
@@ -161,13 +114,13 @@ def request_ride():
     if start is None or end is None:
         return jsonify({'error': 'Missing start or end floor'}), 400
 
-    if not (0 <= start < FLOOR_COUNT and 0 <= end < FLOOR_COUNT):
+    if not (0 <= start < building.number_of_floors and 0 <= end < building.number_of_floors):
         return jsonify({'error': 'Invalid floor range'}), 400
 
     scheduler.handle_request(start, end)
     statistics.track_ride(start, end)
 
-    response = jsonify({'message': 'Ride requested successfully'});
+    response = jsonify({'message': 'Ride requested successfully'})
 
     user_id = request.cookies.get("user_id")
     if not user_id:
@@ -180,8 +133,6 @@ def request_ride():
 
 
 if __name__ == "__main__":
-    # Start the elevator loop in a separate thread
-    elevator_thread = threading.Thread(target=run_elevator, daemon=True)
-    elevator_thread.start()
-
+    loop_thread = threading.Thread(target=loop.run, daemon=True)
+    loop_thread.start()
     app.run(host='0.0.0.0', port=5000, debug=True)
