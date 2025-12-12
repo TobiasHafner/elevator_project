@@ -76,7 +76,7 @@ Serves a simple HTML page that displays the real-time elevator state streamed fr
 Great for debugging and procrastination.
 
 ### GET `/elevator/current_time`
-This endpoint returns the current time and date in the simulation.
+This endpoint returns the current time in the simulation.
 The string returned is of the form: '"HH:MM:SS"'. Example: "12:03:22"
 
 ### GET `/elevator/cabin_state`
