@@ -13,7 +13,7 @@ This project is designed to run as a standalone Python application using a virtu
 ### 1. Clone the Repository:
 ```bash
 git clone git@github.com:TobiasHafner/the-elevator.git
-cd elevator_project
+cd the-elevator
 ```
 
 ### 2. Create a Virtual Environment...
