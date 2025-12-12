@@ -1,4 +1,4 @@
-# The Elevator Project
+# The Elevator
 
 This project you are looking at contains a fully simulated elevator system with a virtual clock, scheduler, a virtual population of people using the elevator, ride logging, and a real-time ASCII-art stream. A REST-API is provided allowing to query the ride logs, the current state of the system as well as to request rides.
 
