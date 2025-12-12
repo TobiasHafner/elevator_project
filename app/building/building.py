@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from building.floorcategory import FloorCategory
+from app.building.floorcategory import FloorCategory
 
 
 class Building:

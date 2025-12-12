@@ -2,16 +2,16 @@ import threading
 import uuid
 from hashlib import sha256
 from flask import Flask, jsonify, request, Response, render_template_string
-from building.building import Building
-from building.floordefinition import FLOOR_DEFINITION
-from elevator.elevator import Elevator
-from elevator.scheduling.elevator_scheduler import Scheduler
-from statistics.ride_log import RideLog
-from statistics.statistics import Statistics
-from people.population import Population
-from people.roledistribution import ROLE_DISTRIBUTION
-from loop import Loop
-from virtual_clock import VirtualClock
+from app.building.building import Building
+from app.building.floordefinition import FLOOR_DEFINITION
+from app.elevator.elevator import Elevator
+from app.elevator.scheduling.elevator_scheduler import Scheduler
+from app.statistics.ride_log import RideLog
+from app.statistics.statistics import Statistics
+from app.people.population import Population
+from app.people.roledistribution import ROLE_DISTRIBUTION
+from app.simulation.loop import Loop
+from app.simulation.virtual_clock import VirtualClock
 
 # Constants
 POPULATION_SIZE = 100

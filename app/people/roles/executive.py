@@ -1,5 +1,5 @@
-from building.floorcategory import FloorCategory
-from people.roles.baserole import BaseRole
+from app.building.floorcategory import FloorCategory
+from app.people.roles.baserole import BaseRole
 
 SCHEDULE = [
     (9, 12, [FloorCategory.MEETING, FloorCategory.EXECUTIVE_OFFICES]),

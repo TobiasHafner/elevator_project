@@ -1,5 +1,5 @@
 
-from building.floorcategory import FloorCategory
+from app.building.floorcategory import FloorCategory
 
 FLOOR_DEFINITION = {
     0: FloorCategory.ENTRANCE,

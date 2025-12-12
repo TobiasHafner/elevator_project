@@ -2,9 +2,9 @@
 
 from collections import deque
 
-from elevator.elevator import Elevator
-from elevator.scheduling.scheduler_directions import Directions
-from elevator.scheduling.scheduler_moves import Moves
+from app.elevator.elevator import Elevator
+from app.elevator.scheduling.scheduler_directions import Directions
+from app.elevator.scheduling.scheduler_moves import Moves
 
 # Weight of an average person
 PERSON_WEIGHT = 80

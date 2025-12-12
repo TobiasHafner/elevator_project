@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from people.person import Person
+from app.people.person import Person
 
 
 class Population:

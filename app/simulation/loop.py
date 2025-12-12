@@ -1,6 +1,6 @@
 import time
 
-from elevator.scheduling.scheduler_moves import Moves
+from app.elevator.scheduling.scheduler_moves import Moves
 
 
 class Loop:

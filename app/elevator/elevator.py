@@ -1,5 +1,5 @@
 # This class represents an elevator that can move, open dors and tell it's current load
-from elevator.safety_error import SafetyError
+from app.elevator.safety_error import SafetyError
 
 
 class Elevator:
