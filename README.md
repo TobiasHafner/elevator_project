@@ -62,7 +62,7 @@ Returns internal scheduler data. This data consists of the number of floors the 
 }
 ```
 
-#### GET `/elevator/statistics`
+### GET `/elevator/statistics`
 Returns aggregated statistical data collected throughout the simulation. These statistics summarize how the elevator has been used over time. The following data is provided:
 - **average_distance**: Average travel distance in floors across all recorded rides.
 - **average_from_distance_by_floor**: Average distance traveled from each floor. This describes how far passengers starting at a given floor typically travel.
@@ -111,7 +111,7 @@ Below is an example for a two-story simulation:
 }
 ```
 
-#### GET `/elevator/log`
+### GET `/elevator/log`
 Returns a chronological list of all recorded elevator rides. Each entry represents a completed (or logged) ride, together with metadata about the rider, timing information, and the associated floors.
 
 Every ride entry contains the following fields:
@@ -146,7 +146,7 @@ Example of a log consisting of two rides:
 
 The ride log can store up to 1000 entries after which it operates as a FiFo queue.
 
-#### GET `/elevator/population`
+### GET `/elevator/population`
 Returns a summary of the current simulated population inside the building. Each entry corresponds to a role type and indicates how many simulated people of that role are currently active in the building model. These roles represent different categories of occupants, each with its own mobility pattern and behavior. The exact set of roles may vary depending on the simulation configuration.
 
 ```json
@@ -161,7 +161,7 @@ Returns a summary of the current simulated population inside the building. Each 
 }
 ```
 
-#### GET `/elevator/population`
+### GET `/elevator/population`
 Triggers a simulated ride request in the elevator system. This endpoint behaves like a user pressing a “call button” on a specific floor and selecting a destination floor inside the cabin. It is used both for interactive control of the simulation and for generating synthetic ride activity when using the system as a mock API / load generator.
 
 **Parameters**:
