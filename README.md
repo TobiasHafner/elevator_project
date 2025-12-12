@@ -7,6 +7,59 @@ This project can be used as:
 - A mock API endpoint returning deterministic, structured JSON suitable for automated testing, prototyping, or UI development.
 - Something interesting to run in the background that you can use to kill time while looking at ASCII art
 
+## Getting Started
+This project is designed to run as a standalone Python application using a virtual environment. Follow the steps below to set up the environment, install all dependencies, and launch the elevator simulation server.
+
+1. Clone the Repository:
+```bash
+git clone git@github.com:TobiasHafner/elevator_project.git
+cd elevator_project
+```
+
+2. Create a Virtual Environment...
+```bash
+python3 -m venv .venv
+```
+
+... and activate it.
+
+**Linux / macOS**
+```bash
+source .venv/bin/activate
+```
+
+**Windows**
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+3. Install Dependencies
+This project uses PEP 621 and pyproject.toml to define its dependencies.
+
+Install everything with:
+```bash
+pip install -e .
+```
+The -e (editable mode) allows you to run the project directly from the source without reinstalling after changes.
+
+Alternatively, to install only the declared dependencies:
+```bash
+pip install .
+```
+
+4. Launch the Application
+The project provides an entry point via Python’s module system.
+From inside the activated virtual environment, run:
+```bash
+python -m app.main
+```
+
+The server will typically start on: `http://127.0.0.1:5000`.
+To open the live ASCII-art in browser: `http://localhost:5000/elevator`
+
+5. Stopping the Server
+Simply use `Ctrl + C`.
+
 ## API Documentation
 All endpoints are prefixed with: `/elevator`.
 
