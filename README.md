@@ -10,13 +10,13 @@ This project can be used as:
 ## Getting Started
 This project is designed to run as a standalone Python application using a virtual environment. Follow the steps below to set up the environment, install all dependencies, and launch the elevator simulation server.
 
-1. Clone the Repository:
+### 1. Clone the Repository:
 ```bash
 git clone git@github.com:TobiasHafner/the-elevator.git
 cd elevator_project
 ```
 
-2. Create a Virtual Environment...
+### 2. Create a Virtual Environment...
 ```bash
 python3 -m venv .venv
 ```
@@ -33,7 +33,7 @@ source .venv/bin/activate
 .venv\Scripts\Activate.ps1
 ```
 
-3. Install Dependencies
+### 3. Install Dependencies
 
 This project uses PEP 621 and pyproject.toml to define its dependencies.
 
@@ -48,7 +48,7 @@ Alternatively, to install only the declared dependencies:
 pip install .
 ```
 
-4. Launch the Application
+### 4. Launch the Application
 The project provides an entry point via Python’s module system.
 From inside the activated virtual environment, run:
 ```bash
@@ -58,7 +58,7 @@ python -m app.main
 The server will typically start on: `http://127.0.0.1:5000`.
 To open the live ASCII-art in browser: `http://localhost:5000/elevator`
 
-5. Stopping the Server
+### 5. Stopping the Server
 Simply use `Ctrl + C`.
 
 ## API Documentation
