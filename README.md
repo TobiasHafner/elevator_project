@@ -34,6 +34,7 @@ source .venv/bin/activate
 ```
 
 3. Install Dependencies
+
 This project uses PEP 621 and pyproject.toml to define its dependencies.
 
 Install everything with:
